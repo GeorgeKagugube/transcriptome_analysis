@@ -95,7 +95,7 @@ ora_gene_list_entrezid <- function(df, cutoff=1.0){
   gene_universe <- df$log2FoldChange
   
   ## Name the vector
-  names(gene_universe) <- df$ENTREZID
+  names(gene_universe) <- df$entrezid
   
   # Remove any na values from the list
   gene_list <- na.omit(gene_universe)
@@ -110,7 +110,7 @@ ora_gene_list_entrezid <- function(df, cutoff=1.0){
   genes <- sig_gene_df$log2FoldChange
   
   # Name the vector here
-  names(genes) <- sig_gene_df$ENTREZID
+  names(genes) <- sig_gene_df$entrezid
   
   # filter by log2fold value here
   genes <- names(genes)[abs(genes) > cutoff]
@@ -128,7 +128,7 @@ gsea_gene_generater_func <- function(df){
   # Inputs: A dataframe from DESeq, with the rows names == Ensembl gene IDs
   # Outputs: A ranked vector of gene list from high to low 
   gsea_gene_list <- df$log2FoldChange
-  names(gsea_gene_list) <- df$Entrezid
+  names(gsea_gene_list) <- df$entrezid
   gsea_list <- na.omit(gsea_gene_list)
   gsea_list <- sort(gsea_list, decreasing = TRUE)
   
@@ -140,7 +140,7 @@ reactome_gsea_gene_generater_func <- function(df){
   # Inputs: A dataframe from DESeq, with the rows names == Ensembl gene IDs
   # Outputs: A ranked vector of gene list from high to low 
   gsea_gene_list <- df$log2FoldChange
-  names(gsea_gene_list) <- df$Entrezid
+  names(gsea_gene_list) <- df$entrezid
   gsea_list <- na.omit(gsea_gene_list)
   gsea_list <- sort(gsea_list, decreasing = TRUE)
   
@@ -169,7 +169,7 @@ ora_kegg_gene_list <- function(df, cuttoff = 1.0){
   kegg_gene_list <- df$log2FoldChange
   
   ## Name the vector with ENTREZIDS
-  names(kegg_gene_list) <- df$Entrezid
+  names(kegg_gene_list) <- df$entrezid
   
   # Remove any NA values
   kegg_gene_list <- na.omit(kegg_gene_list)
@@ -184,7 +184,7 @@ ora_kegg_gene_list <- function(df, cuttoff = 1.0){
   kegg_genes <- kegg_sig_genes_df$log2FoldChange
   
   # name the vector above here
-  names(kegg_genes) <- kegg_sig_genes_df$Entrezid
+  names(kegg_genes) <- kegg_sig_genes_df$entrezid
   
   ## filter by logfoldchange greater than 1 here
   kegg_genes <- names(kegg_genes)[abs(kegg_genes) > cuttoff]
@@ -404,7 +404,7 @@ kegg_pathway_analysis <- function(dge_file, method = "gsea"){
     dedup_ids <- ids[!duplicated(ids[c("ENSEMBL")]),]
     
     # Create a new dataframe df2 which has only the genes which were successfully mapped using the bitr function above
-    df2 = dge_file[rownames(dge_file) %in% dedup_ids$ENSEMBL,]
+    df2 = dge_file#[rownames(dge_file) %in% dedup_ids$ENSEMBL,]
     
     # Create a new column in df2 with the corresponding ENTREZ IDs
     rownames(dedup_ids) <- dedup_ids$ENSEMBL 
@@ -413,7 +413,7 @@ kegg_pathway_analysis <- function(dge_file, method = "gsea"){
     
     ## Select the desired genes here 
     kegg_gene_list <- df2$log2FoldChange
-    names(kegg_gene_list) <- df2$ENTREZID
+    names(kegg_gene_list) <- df2$entrezid
     kegg_gene_list <- na.omit(kegg_gene_list)
     kegg_gene_list <- sort(kegg_gene_list, decreasing = TRUE)
     
@@ -468,7 +468,7 @@ kegg_pathway_analysis <- function(dge_file, method = "gsea"){
 gseFunc <- function(gene_list, item="ALL"){
   gse <- gseGO(geneList = gene_list,
                ont = item,
-               keyType = "ENSEMBL",
+               keyType = "SYMBOL",
                minGSSize = 5,
                maxGSSize = 500,
                pvalueCutoff = 0.05,
@@ -481,7 +481,7 @@ gseFunc <- function(gene_list, item="ALL"){
 oraFunc <- function (gene_list, item = "ALL") {
   go_enrich <- enrichGO(gene = gene_list,
                         OrgDb = "org.Dr.eg.db", 
-                        keyType = 'ENSEMBL',
+                        keyType = 'SYMBOL',
                         ont = item,
                         pvalueCutoff = 0.05,
                         pAdjustMethod = "fdr",

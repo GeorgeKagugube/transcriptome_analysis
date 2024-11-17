@@ -163,6 +163,7 @@ dds_mut$Group <- relevel(dds_mut$Group, ref = "mut_unexposed")
 dds_wt$Group <- relevel(dds_wt$Group, ref = "wt_unexposed")
 dds$Group <- relevel(dds$Group, ref = "wt_unexposed")
 
+## Run DESeq2
 dds_mut <- DESeq(dds_mut)
 dds_wt <- DESeq(dds_wt)
 dds <- DESeq(dds)
@@ -221,26 +222,27 @@ res_all_wt_exposed_shrink <- lfcShrink(dds = dds,
                                        res = res_all_wt_exposed)
 
 ## Annotat the data before exporting the data 
-res_all_wt_exposed_shrink$ENTREZID <- mapIds(org.Dr.eg.db,
-                              keys = row.names(res_all_wt_exposed_shrink),
-                              column = c("ENTREZID"),
-                              keytype = "SYMBOL",
-                              multiVals = "first")
+annot_data <- function(data, org = org.Dr.eg.db) {
+  data$entrezid <- mapIds(org,
+                          keys = row.names(data),
+                          column = c("ENTREZID"),
+                          keytype = "SYMBOL",
+                          multiVals = "first")
+  data$esembl_id <- mapIds(org,
+                           keys = row.names(data),
+                           column = c("ENSEMBL"),
+                           keytype = "SYMBOL",
+                           multiVals = "first")
   
+  return(data)
+}
 
-## Wild type 
-res_wt_shrink$ENTREZID <- mapIds(org.Dr.eg.db,
-                                        keys = row.names(res_wt_shrink),
-                                        column = c("ENTREZID"),
-                                        keytype = "SYMBOL",
-                                        multiVals = "first")
+res_all_wt_exposed_shrink <- annot_data(res_all_wt_exposed_shrink)
 
 ## Export data to a csv file for further analysis and inspection later
+## Export the data 
 write.csv(res_all_wt_exposed_shrink,
-          file = "/Users/gwk/Desktop/PhD/Data/PhD_data/Brain_Data_reanalysed/wt_exposed_lfc.csv")
-
-write.csv(res_wt_shrink,
-          file = "/Users/gwk/Desktop/PhD/Data/PhD_data/Brain_reanalysed/wildtype_reanalysed.csv")
+          file = paste0(output_folder,'/wt_exposed.csv'))
 
 ################################################################################
 ############. Heatmap Plot of the DEG list here ################################
