@@ -2,9 +2,14 @@
 rm(list = ls())
 
 ## Set the directory with the expression datasets here 
-setwd('/Users/gwk/Desktop/PhD/Data/PhD_data/Brain_reanalysed/star')
+# Re-analysed samples with the new reference genome
+setwd('/Users/gwk/Desktop/PhD/Data/PhD_data/Brain/GZ11_star_output/star')
 
-## There should be more changes here 
+## Analysis (mapped on the pervious reference genome version)
+setwd('/Users/gwk/Desktop/PhD/Data/PhD_data/Brain/GZ10_star_output')
+
+## This is the output folder for the final analysis
+output_folder = '/Users/gwk/Desktop/PhD/Data/PhD_data/Brain/finalAnalysis'
 
 ## Source user defined files containing some useful functions here
 source("/Users/gwk/Desktop/PhD/RNA_Sequencing/Bulk_RNA_Seq/PhD_RNA_Seq_Data/Re_run_counts/Scripts/helper_function_and_env_setup.R")
@@ -22,13 +27,15 @@ countMatrix <- staroutput_preprocessing(dr, file1)
 ## Read in the data from the sample informatio here 
 # If no sample information exists, you can create to match the countMatrix
 samples <- read.csv("sample_information.csv", row.names = 1)
-row_col_names <- as.vector(paste0("sample",rownames(samples)))
-rownames(samples) <- row_col_names
-colnames(countMatrix) <- row_col_names
 
 ## Explore the loaded data here
 head(countMatrix)
 head(samples, 15)
+
+## Fix the column names in the count matrix to match the sample information rownames
+row_col_names <- as.vector(paste0("sample",rownames(samples)))
+rownames(samples) <- row_col_names
+colnames(countMatrix) <- row_col_names
 
 ## Makesure that sample rownames match the countmatrix colnames here
 # The lines below must return true for all
@@ -87,23 +94,27 @@ dds_wt <- DESeqDataSetFromMatrix(countData = as.matrix(countWT),
 pca_plot(dds_mut, mut)
 pca_plot(dds_wt, wt)
 
+## calculate the pca values here
+vsd <- vst(dds)
 plotPCA(vsd, intgroup="Group")
 
-vsd <- vst(dds_mut)
-
 ## Estimate the size factor here 
+dds <- estimateSizeFactors(dds)
 dds_mut <- estimateSizeFactors(dds_mut)
 dds_wt <- estimateSizeFactors(dds_wt)
 sizeFactors(dds_mut)
-sizeFactors(dds_wt)
-normalised_counts <- counts(dds_mut, normalized = T)
+sizeFactors
+normalised_all <- counts(dds, normalized = T)
+normalised_counts_mut <- counts(dds_mut, normalized = T)
 normalised_counts_wt <- counts(dds_wt, normalized = T)
 
 ## Export the data 
-write.csv(normalised_counts,
-          file = "/Users/gwk/Desktop/PhD/Data/PhD_data/Brain_reanalysed/mutant_normalised.csv")
-write.csv(normalised_counts_wt,
-          file = "/Users/gwk/Desktop/PhD/Data/PhD_data/Brain_reanalysed/wt_normalised.csv")
+write.csv(normalised_all,
+          file = paste0(output_folder,'/all_normalised.csv'))
+write.csv(normalised_counts_mut,
+          file = paste0(output_folder,'/mutant_normalised.csv'))
+write.csv(normalised_counts_mut,
+          file = paste0(output_folder,'/wt_normalised.csv'))
 
 ## Transform normalised data for visualisation here 
 rld_mut <- rlog(dds_mut, blind = T)
