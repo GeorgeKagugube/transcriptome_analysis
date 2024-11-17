@@ -4,6 +4,8 @@ rm(list = ls())
 ## Set the directory with the expression datasets here 
 setwd('/Users/gwk/Desktop/PhD/Data/PhD_data/Brain_reanalysed/star')
 
+## There should be more changes here 
+
 ## Source user defined files containing some useful functions here
 source("/Users/gwk/Desktop/PhD/RNA_Sequencing/Bulk_RNA_Seq/PhD_RNA_Seq_Data/Re_run_counts/Scripts/helper_function_and_env_setup.R")
 source("/Users/gwk/Desktop/PhD/Scripts/star_output_to_count_matrix.R")
