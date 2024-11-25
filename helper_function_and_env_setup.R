@@ -19,17 +19,20 @@ lapply(requiredPackages, library, character.only=TRUE)
 ################################################################################
 ################### Functions start from here. #################################
 ################################################################################
-transcriptome_annotation <- function(df){
+transcriptome_annotation <- function(df, org = "org.Dr.eg.db"){
   # Inputs: a dataframe from DESeqs (containing ENSEMBL IDs and log fold changes)
   # Inputs: choose an organism to work with, default is danio - Zebrafish
   # Outputs: annotated dataframe with gene symbols and entrezids
   # The Ensembl IDs need to be the row names for this function to work
     print("Annotating data with Zebrafish gene symbols and EntrezIDs......")
-    df$Symbols <- mapIds(org.Dr.eg.db,
+  if (rownames(df) == 'ENS'){
+    
+    df$Symbols <- mapIds(org = org,
                          keys = rownames(df),
                          column = "SYMBOL",
                          keytype = "ENSEMBL",
                          multiVals = "first")
+  } 
     
     df$Entrezid <- mapIds(org.Dr.eg.db,
                           keys = rownames(df),
@@ -75,7 +78,7 @@ ora_gene_list <- function(df, cutoff=1.0){
   genes <- na.omit(genes)
   
   # filter by log2fold value here
-  genes <- names(genes)[abs(genes) > cutoff]
+  genes <- names(genes)[abs(genes) >= cutoff]
   
   genes_ids <- list(gene_list, genes)
   
@@ -131,7 +134,6 @@ gsea_gene_generater_func <- function(df){
   names(gsea_gene_list) <- df$entrezid
   gsea_list <- na.omit(gsea_gene_list)
   gsea_list <- sort(gsea_list, decreasing = TRUE)
-  
   return(gsea_list)
 }
 
@@ -143,7 +145,6 @@ reactome_gsea_gene_generater_func <- function(df){
   names(gsea_gene_list) <- df$entrezid
   gsea_list <- na.omit(gsea_gene_list)
   gsea_list <- sort(gsea_list, decreasing = TRUE)
-  
   return(gsea_list)
 }
 
