@@ -5,4 +5,5 @@ the influx transporters slc39a10 and slc39a8 and the efflux transporter slc30a10
   		* 2. Putative gene ontology terms and kegg pathways affected by Mn overload. 
 
 # Method
-slc39a14^-/- and slc39a14^+/+ zebrafish were exposed to 20 µM of MnCl~2
+slc39a14^-/- and slc39a14^+/+ zebrafish were exposed to 20 µM of MnCl~2. Fish brains and eyes were separately dissected on 6dpf (days post fertilisation), and RNA was extracted from these tissues. Samples in triplicates were submitted to UCL genomics for sequencing. Raw read data was received, and the analysis pipeline below was implemented in UCL myriad HPC, with the downstream analysis completed on MacBook.
+
